@@ -1,3 +1,5 @@
+const { categories } = require("./data");
+
 const readline = require("readline");
 const rl = readline.createInterface({
   input: process.stdin,
@@ -8,61 +10,6 @@ rl.on("close", function () {
   console.log("\nBYE BYE");
   process.exit(0);
 });
-
-const categories = {
-  id: 0,
-  label: "rootCategory",
-  children: [
-    {
-      id: 1,
-      label: "Applications",
-      children: [
-        {
-          id: 2,
-          label: "Calendar"
-        },
-        {
-          id: 3,
-          label: "Chrome"
-        },
-        {
-          id: 4,
-          label: "Webstorm"
-        }
-      ]
-    },
-    {
-      id: 5,
-      label: "Documents",
-      children: [
-        {
-          id: 10,
-          label: "OSS"
-        },
-        {
-          id: 6,
-          label: "Material-UI",
-          children: [
-            {
-              id: 7,
-              label: "src",
-              children: [
-                {
-                  id: 8,
-                  label: "index.js"
-                },
-                {
-                  id: 9,
-                  label: "tree-view.js"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ]
-};
 
 const loopAndDisplayNodeLabel = (node) => (level) => {
   const indent = Array.from({ length: level + 1 }, (_, val) => " ");
@@ -92,7 +39,6 @@ const findNodeByLabelInTree = (label, node) => {
 
 const updateCategoriesTreeWithNewNode = (nodeUpdated, iterateNode) => {
   if (iterateNode.label === nodeUpdated.label) {
-    console.log("update node");
     Object.assign(iterateNode, nodeUpdated);
     return;
   }
@@ -125,9 +71,6 @@ const askQuestions = (categories) => {
   rl.question("Nouveau noeud: label de la catégorie ?", (c) => {
     rl.question("Label de la catégorie parent ?", (l) => {
       const label = l.trim() === "" ? "rootCategory" : l;
-      console.log(
-        `Ajout de la nouvelle catégorie : ${c} sous la catégorie ${l}`
-      );
       const nodeSelected = findNodeByLabelInTree(l, categories);
       if (nodeSelected && nodeSelected.label) {
         const categoriesUpdated = syncCategoriesTreeWithNodeUpdatedHandler(
@@ -135,7 +78,6 @@ const askQuestions = (categories) => {
           nodeSelected,
           categories
         );
-        // console.log("categoriesUpdated", categoriesUpdated);
         loopAndDisplayNodeLabel(categoriesUpdated)(0);
         askQuestions(categoriesUpdated);
       }
