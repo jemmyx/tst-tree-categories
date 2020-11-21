@@ -5,7 +5,7 @@ const rl = readline.createInterface({
 });
 
 rl.on("close", function () {
-  console.log("\nBYE BYE !!!");
+  console.log("\nBYE BYE");
   process.exit(0);
 });
 
@@ -104,7 +104,7 @@ const updateCategoriesTreeWithNewNode = (nodeUpdated, iterateNode) => {
   }
 };
 
-const updateCategoriesTreeWithNewNodeHandler = (
+const syncCategoriesTreeWithNodeUpdatedHandler = (
   categoryName,
   nodeSelected,
   categories
@@ -121,21 +121,27 @@ const updateCategoriesTreeWithNewNodeHandler = (
   return cloneCategories;
 };
 
-loopAndDisplayNodeLabel(categories)(0);
-
-rl.question("Nouveau noeud: label de la catégorie ?", (c) => {
-  rl.question("Label de la catégorie parent ?", (l) => {
-    const label = l.trim() === "" ? "rootCategory" : l;
-    console.log(`Ajout de la nouvelle catégorie : ${c} sous la catégorie ${l}`);
-    const nodeSelected = findNodeByLabelInTree(l, categories);
-    if (nodeSelected && nodeSelected.label) {
-      const categoriesUpdated = updateCategoriesTreeWithNewNodeHandler(
-        c,
-        nodeSelected,
-        categories
+const askQuestions = (categories) => {
+  rl.question("Nouveau noeud: label de la catégorie ?", (c) => {
+    rl.question("Label de la catégorie parent ?", (l) => {
+      const label = l.trim() === "" ? "rootCategory" : l;
+      console.log(
+        `Ajout de la nouvelle catégorie : ${c} sous la catégorie ${l}`
       );
-      // console.log("categoriesUpdated", categoriesUpdated);
-      loopAndDisplayNodeLabel(categoriesUpdated)(0);
-    }
+      const nodeSelected = findNodeByLabelInTree(l, categories);
+      if (nodeSelected && nodeSelected.label) {
+        const categoriesUpdated = syncCategoriesTreeWithNodeUpdatedHandler(
+          c,
+          nodeSelected,
+          categories
+        );
+        // console.log("categoriesUpdated", categoriesUpdated);
+        loopAndDisplayNodeLabel(categoriesUpdated)(0);
+        askQuestions(categoriesUpdated);
+      }
+    });
   });
-});
+};
+
+loopAndDisplayNodeLabel(categories)(0);
+askQuestions(categories);
