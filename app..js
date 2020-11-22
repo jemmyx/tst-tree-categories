@@ -68,21 +68,38 @@ const syncCategoriesTreeWithNodeUpdatedHandler = (
 };
 
 const askQuestions = (categories) => {
-  rl.question("Nouveau noeud: label de la catégorie ?", (c) => {
-    rl.question("Label de la catégorie parent ?", (l) => {
-      const label = l.trim() === "" ? "rootCategory" : l;
-      const nodeSelected = findNodeByLabelInTree(l, categories);
-      if (nodeSelected && nodeSelected.label) {
-        const categoriesUpdated = syncCategoriesTreeWithNodeUpdatedHandler(
-          c,
-          nodeSelected,
-          categories
-        );
-        loopAndDisplayNodeLabel(categoriesUpdated)(0);
-        askQuestions(categoriesUpdated);
-      }
-    });
-  });
+  rl.question(
+    `
+  Menu
+  ----------------------
+  1) Ajouter un noeud.
+  3) Supprimer un noeud.
+ \nEntrez le numéro de fonction souhaité. `,
+    (c) => {
+      const choice = c;
+      rl.question("Label de la catégorie ?", (l) => {
+        if (c === "1") {
+          rl.question("Noeud du parent ?", (p) => {
+            const label = p.trim() === "" ? "rootCategory" : p;
+            const nodeSelected = findNodeByLabelInTree(p, categories);
+            if (nodeSelected && nodeSelected.label) {
+              const categoriesUpdated = syncCategoriesTreeWithNodeUpdatedHandler(
+                l,
+                nodeSelected,
+                categories
+              );
+              loopAndDisplayNodeLabel(categoriesUpdated)(0);
+              askQuestions(categoriesUpdated);
+            }
+            console.log(`Node '${p}' not found`);
+            askQuestions(categories);
+          });
+          return;
+        }
+        console.log("delete to be implemented.");
+      });
+    }
+  );
 };
 
 loopAndDisplayNodeLabel(categories)(0);
