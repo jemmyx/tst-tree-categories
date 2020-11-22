@@ -2,6 +2,7 @@ const { categories } = require("./data");
 const { GraphCat } = require("./graph");
 
 const readline = require("readline");
+const { Console } = require("console");
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
@@ -24,7 +25,14 @@ const askQuestions = (categories) => {
     (c) => {
       if (c === "1") {
         rl.question("Label de la catégorie ?", (l) => {
-          rl.question("#ID du noeud du parent ?", (id) => {
+          rl.question("#ID du noeud du parent ?", (id = null) => {
+            if (!categories) {
+              // noeud root
+              const newNode = { id: 0, label: l };
+              GraphCat.loopAndDisplayNodeLabel(newNode)(0);
+              askQuestions(newNode);
+              return;
+            }
             const nodeSelected = GraphCat.findNodeByIdInTree(id, categories);
             if (nodeSelected && nodeSelected.label) {
               const categoriesUpdated = GraphCat.syncCategoriesTreeWithNodeUpdatedHandler(
@@ -35,6 +43,7 @@ const askQuestions = (categories) => {
               GraphCat.loopAndDisplayNodeLabel(categoriesUpdated)(0);
             } else {
               console.log(`Node '${id}' not found`);
+              GraphCat.loopAndDisplayNodeLabel(categories)(0);
             }
             askQuestions(categories);
           });
