@@ -13,11 +13,28 @@ rl.on("close", function () {
 
 const loopAndDisplayNodeLabel = (node) => (level) => {
   const indent = Array.from({ length: level + 1 }, (_, val) => " ");
-  console.log(`${indent.join(" ")} niveau ${level}: ${node.label}`);
+  console.log(`${indent.join(" ")} l${level}: ${node.label} #${node.id}`);
   if (node.children && Array.isArray(node.children)) {
     level += 1;
     node.children.map((n) => loopAndDisplayNodeLabel(n)(level));
   }
+};
+
+const findNodeByIdInTree = (id, node) => {
+  if (node.id === parseInt(id, 10)) {
+    return node;
+  }
+  let foundNode = null;
+  if (node.children && Array.isArray(node.children)) {
+    for (let i = 0; i < node.children.length; i++) {
+      foundNode = findNodeByIdInTree(id, node.children[i]);
+      if (foundNode) {
+        break;
+      }
+    }
+    return foundNode;
+  }
+  return null;
 };
 
 const findNodeByLabelInTree = (label, node) => {
@@ -79,9 +96,9 @@ const askQuestions = (categories) => {
       const choice = c;
       rl.question("Label de la catégorie ?", (l) => {
         if (c === "1") {
-          rl.question("Noeud du parent ?", (p) => {
+          rl.question("#ID du noeud du parent ?", (p) => {
             const label = p.trim() === "" ? "rootCategory" : p;
-            const nodeSelected = findNodeByLabelInTree(p, categories);
+            const nodeSelected = findNodeByIdInTree(label, categories);
             if (nodeSelected && nodeSelected.label) {
               const categoriesUpdated = syncCategoriesTreeWithNodeUpdatedHandler(
                 l,
