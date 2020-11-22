@@ -1,4 +1,5 @@
 const { sequenceId } = require("./sequenceId");
+const cloneDeep = require("./cloneDeep");
 
 const sequencer = sequenceId(20);
 
@@ -48,7 +49,7 @@ const GraphCat = {
     return null;
   },
   updateCategoriesTreeWithNewNode: (nodeUpdated, iterateNode) => {
-    if (iterateNode.label === nodeUpdated.label) {
+    if (iterateNode.id === nodeUpdated.id) {
       Object.assign(iterateNode, nodeUpdated);
       return;
     }
