@@ -4,6 +4,10 @@ const sequencer = sequenceId(20);
 
 const GraphCat = {
   loopAndDisplayNodeLabel: (node) => (level) => {
+    if (!node) {
+      console.log("No categories");
+      return;
+    }
     const indent = Array.from({ length: level + 1 }, (_, val) => " ");
     console.log(`${indent.join(" ")} l${level}: ${node.label} #${node.id}`);
     if (node.children && Array.isArray(node.children)) {
@@ -54,6 +58,23 @@ const GraphCat = {
         GraphCat.updateCategoriesTreeWithNewNode(nodeUpdated, n)
       );
     }
+  },
+  searchAndDeleteNodeGraph: (graphNodes, id) => {
+    const nodeId = parseInt(id, 10);
+    if (graphNodes.id === nodeId) {
+      return null;
+    }
+    let cloneGraph = graphNodes;
+    if (cloneGraph.children && Array.isArray(cloneGraph.children)) {
+      const children = (cloneGraph.children || []).filter(
+        (n) => n.id !== nodeId
+      );
+      cloneGraph.children = children;
+      (cloneGraph.children || []).map((n2) =>
+        GraphCat.searchAndDeleteNodeGraph(n2, id)
+      );
+    }
+    return cloneGraph;
   },
   syncCategoriesTreeWithNodeUpdatedHandler: (
     categoryName,

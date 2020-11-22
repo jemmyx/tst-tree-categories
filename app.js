@@ -18,12 +18,11 @@ const askQuestions = (categories) => {
   Menu
   ----------------------
   1) Ajouter un noeud.
-  3) Supprimer un noeud.
+  2) Supprimer un noeud.
  \nEntrez le numéro de fonction souhaité. `,
     (c) => {
-      const choice = c;
-      rl.question("Label de la catégorie ?", (l) => {
-        if (c === "1") {
+      if (c === "1") {
+        rl.question("Label de la catégorie ?", (l) => {
           rl.question("#ID du noeud du parent ?", (p) => {
             const label = p.trim() === "" ? "rootCategory" : p;
             const nodeSelected = GraphCat.findNodeByIdInTree(label, categories);
@@ -39,9 +38,14 @@ const askQuestions = (categories) => {
             console.log(`Node '${p}' not found`);
             askQuestions(categories);
           });
-          return;
-        }
-        console.log("delete to be implemented.");
+        });
+        return;
+      }
+
+      rl.question("ID du noeud à supprimer ?", (id) => {
+        const graphParsed = GraphCat.searchAndDeleteNodeGraph(categories, id);
+        GraphCat.loopAndDisplayNodeLabel(graphParsed)(0);
+        askQuestions(graphParsed);
       });
     }
   );
