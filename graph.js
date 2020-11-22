@@ -1,3 +1,7 @@
+const { sequenceId } = require("./sequenceId");
+
+const sequencer = sequenceId(20);
+
 const GraphCat = {
   loopAndDisplayNodeLabel: (node) => (level) => {
     const indent = Array.from({ length: level + 1 }, (_, val) => " ");
@@ -60,7 +64,10 @@ const GraphCat = {
     const children = nodeSelected.children || [];
     const nodeUpdated = {
       ...nodeSelected,
-      children: [...children, { id: 999, label: categoryName }]
+      children: [
+        ...children,
+        { id: sequencer.next().value, label: categoryName }
+      ]
     };
     //update tree with new node
     let cloneCategories = JSON.parse(JSON.stringify(categories));
