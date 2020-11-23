@@ -1,5 +1,5 @@
-const { categories } = require("./data");
-const { GraphCat } = require("./graph");
+const { categories } = require("./assets/data");
+const { GraphCat } = require("./modules/graph");
 
 const readline = require("readline");
 const { Console } = require("console");

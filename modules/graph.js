@@ -1,5 +1,5 @@
-const { sequenceId } = require("./sequenceId");
-const cloneDeep = require("./cloneDeep");
+const { sequenceId } = require("../sequenceId");
+const cloneDeep = require("../utils/cloneDeep");
 
 const sequencer = sequenceId(20);
 
