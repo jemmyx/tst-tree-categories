@@ -41,11 +41,12 @@ const askQuestions = (categories) => {
                 categories
               );
               GraphCat.loopAndDisplayNodeLabel(categoriesUpdated)(0);
+              askQuestions(categoriesUpdated);
             } else {
               console.log(`Node '${id}' not found`);
               GraphCat.loopAndDisplayNodeLabel(categories)(0);
+              askQuestions(categories);
             }
-            askQuestions(categories);
           });
         });
         return;
