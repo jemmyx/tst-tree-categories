@@ -3,7 +3,12 @@ const cloneDeep = require("../utils/cloneDeep");
 
 const sequencer = sequenceId(20);
 
-const GraphCat = {
+const GraphNode = {
+  sequenceId: 0,
+  sequenceNext: () => {
+    GraphNode.sequenceId = GraphNode.sequenceId + 1;
+    return GraphNode.sequenceId;
+  },
   loopAndDisplayNodeLabel: (node) => (level) => {
     if (!node) {
       console.log("No categories");
@@ -13,7 +18,7 @@ const GraphCat = {
     console.log(`${indent.join(" ")} l${level}: ${node.label} #${node.id}`);
     if (node.children && Array.isArray(node.children)) {
       level += 1;
-      node.children.map((n) => GraphCat.loopAndDisplayNodeLabel(n)(level));
+      node.children.map((n) => GraphNode.loopAndDisplayNodeLabel(n)(level));
     }
   },
   findNodeByIdInTree: (id, node) => {
@@ -23,7 +28,7 @@ const GraphCat = {
     let foundNode = null;
     if (node.children && Array.isArray(node.children)) {
       for (let i = 0; i < node.children.length; i++) {
-        foundNode = GraphCat.findNodeByIdInTree(id, node.children[i]);
+        foundNode = GraphNode.findNodeByIdInTree(id, node.children[i]);
         if (foundNode) {
           break;
         }
@@ -39,7 +44,7 @@ const GraphCat = {
     let foundNode = null;
     if (node.children && Array.isArray(node.children)) {
       for (let i = 0; i < node.children.length; i++) {
-        foundNode = GraphCat.findNodeByLabelInTree(label, node.children[i]);
+        foundNode = GraphNode.findNodeByLabelInTree(label, node.children[i]);
         if (foundNode) {
           break;
         }
@@ -56,7 +61,7 @@ const GraphCat = {
 
     if (iterateNode.children && Array.isArray(iterateNode.children)) {
       iterateNode.children.map((n) =>
-        GraphCat.updateCategoriesTreeWithNewNode(nodeUpdated, n)
+        GraphNode.updateCategoriesTreeWithNewNode(nodeUpdated, n),
       );
     }
   },
@@ -68,11 +73,11 @@ const GraphCat = {
     let cloneGraph = graphNodes;
     if (cloneGraph.children && Array.isArray(cloneGraph.children)) {
       const children = (cloneGraph.children || []).filter(
-        (n) => n.id !== nodeId
+        (n) => n.id !== nodeId,
       );
       cloneGraph.children = children;
       (cloneGraph.children || []).map((n2) =>
-        GraphCat.searchAndDeleteNodeGraph(n2, id)
+        GraphNode.searchAndDeleteNodeGraph(n2, id),
       );
     }
     return cloneGraph;
@@ -80,7 +85,7 @@ const GraphCat = {
   syncCategoriesTreeWithNodeUpdatedHandler: (
     categoryName,
     nodeSelected,
-    categories
+    categories,
   ) => {
     //update the node
     const children = nodeSelected.children || [];
@@ -88,14 +93,14 @@ const GraphCat = {
       ...nodeSelected,
       children: [
         ...children,
-        { id: sequencer.next().value, label: categoryName }
-      ]
+        { id: GraphNode.sequenceNext(), label: categoryName },
+      ],
     };
     //update tree with new node
     let cloneCategories = JSON.parse(JSON.stringify(categories));
-    GraphCat.updateCategoriesTreeWithNewNode(nodeUpdated, cloneCategories);
+    GraphNode.updateCategoriesTreeWithNewNode(nodeUpdated, cloneCategories);
     return cloneCategories;
-  }
+  },
 };
 
-module.exports = { GraphCat };
+module.exports = { GraphNode };
