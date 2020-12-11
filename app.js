@@ -90,5 +90,8 @@ const askQuestions = (categories) => {
   );
 };
 
+GraphNode.sequenceNext(categories);
+return;
+
 GraphNode.loopAndDisplayNodeLabel(categories)(0);
 askQuestions(categories);

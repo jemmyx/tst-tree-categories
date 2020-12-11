@@ -5,7 +5,20 @@ const sequencer = sequenceId(20);
 
 const GraphNode = {
   sequenceId: 0,
-  sequenceNext: () => {
+  sequenceNext: (node) => {
+    if (GraphNode.sequenceId === 0) {
+      const findMaxId = (maxId, node) => {
+        if (parseInt(node.id, 10) > maxId) {
+          GraphNode.sequenceId = parseInt(node.id, 10);
+        }
+        if (node.children) {
+          node.children.forEach((c) => {
+            findMaxId(GraphNode.sequenceId, c);
+          });
+        }
+      };
+      findMaxId(GraphNode.sequenceId, node);
+    }
     GraphNode.sequenceId = GraphNode.sequenceId + 1;
     return GraphNode.sequenceId;
   },
@@ -61,7 +74,7 @@ const GraphNode = {
 
     if (iterateNode.children && Array.isArray(iterateNode.children)) {
       iterateNode.children.map((n) =>
-        GraphNode.updateCategoriesTreeWithNewNode(nodeUpdated, n),
+        GraphNode.updateCategoriesTreeWithNewNode(nodeUpdated, n)
       );
     }
   },
@@ -73,11 +86,11 @@ const GraphNode = {
     let cloneGraph = graphNodes;
     if (cloneGraph.children && Array.isArray(cloneGraph.children)) {
       const children = (cloneGraph.children || []).filter(
-        (n) => n.id !== nodeId,
+        (n) => n.id !== nodeId
       );
       cloneGraph.children = children;
       (cloneGraph.children || []).map((n2) =>
-        GraphNode.searchAndDeleteNodeGraph(n2, id),
+        GraphNode.searchAndDeleteNodeGraph(n2, id)
       );
     }
     return cloneGraph;
@@ -85,7 +98,7 @@ const GraphNode = {
   syncCategoriesTreeWithNodeUpdatedHandler: (
     categoryName,
     nodeSelected,
-    categories,
+    categories
   ) => {
     //update the node
     const children = nodeSelected.children || [];
@@ -93,14 +106,14 @@ const GraphNode = {
       ...nodeSelected,
       children: [
         ...children,
-        { id: GraphNode.sequenceNext(), label: categoryName },
-      ],
+        { id: GraphNode.sequenceNext(categories), label: categoryName }
+      ]
     };
     //update tree with new node
     let cloneCategories = JSON.parse(JSON.stringify(categories));
     GraphNode.updateCategoriesTreeWithNewNode(nodeUpdated, cloneCategories);
     return cloneCategories;
-  },
+  }
 };
 
 module.exports = { GraphNode };
